@@ -1,21 +1,39 @@
 import { useState } from "react";
 
+import { getFirestore, addDoc, collection, getDocs } from "firebase/firestore";
+
 import NavigBar from "./components/navigBar";
 import CardComp from "./components/cardComp";
+import Carousel from "react-bootstrap/Carousel";
 
 import icon1 from "./assets/icons/1.png";
 import icon2 from "./assets/icons/2.png";
 import icon3 from "./assets/icons/3.png";
 import Fotr from "./components/fotr";
+import NewsCard from "./components/NewsCard";
 
 function App() {
   const [count, setCount] = useState(0);
+  let [storedValues, setStoredValues] = useState([]);
+  
+  const db = getFirestore();
+
+  const fetchDataFromFirestore = async () => {
+    const querySnapshot = await getDocs(collection(db, "news"));
+    const temporaryArr = [];
+    querySnapshot.forEach((doc) => {
+      temporaryArr.push(doc.data());
+      console.log(doc.data());
+    });
+    setStoredValues(temporaryArr);
+    alert("data get")
+  };
 
   return (
     <>
       <NavigBar />
 
-      <hr id="home" />
+      <hr onLoad={fetchDataFromFirestore} id="home" />
 
       <div className="first text-center py-5 FullHeight d-flex align-items-center justify-content-center">
         <div
@@ -37,7 +55,7 @@ function App() {
       </div>
 
       {/* cards */}
-      <hr id="more"/>
+      <hr id="more" />
       <br />
 
       <div
@@ -83,7 +101,17 @@ function App() {
           <div className="text-center">
             <h1 className="text-light display-1 fontTitle pb-5">الأخبار</h1>
             <br />
-            <h3 className="text-light fs-4">ستتوفر قريبا</h3>
+            <button className="btn btn-success m-5 shadow" onClick={fetchDataFromFirestore}>شوف الأخبار</button>
+            <br />
+            <div className="my-2 height5">
+              <Carousel className="h-100">
+                {storedValues.map((value, index) => (
+                  <Carousel.Item className="height5" key={index} interval={3000} >
+                      <NewsCard title={value.title} text={value.text}/>                    
+                  </Carousel.Item>
+                ))}
+              </Carousel>
+            </div>
           </div>
         </div>
       </div>
@@ -101,27 +129,27 @@ function App() {
             <div>
               <h1 className="fontTitle display-1">لماذا نحن؟</h1>
               <p className="fontAra fs-5 mt-5">
-                تُعد مدرسة البراعم الابتدائية المشتركة واحدة من الروافد التعليمية
-                المتميزة في عالم التعليم، وذلك بفضل توفيرها لبيئة تعليمية محفزة
-                ومتطورة تتسم بالتشكيل الرائع. يتميز المدرسون في هذه المدرسة
-                بمهارات تدريس عالية وتوجيه فردي لكل طالب يستند إلى معرفته
-                واحتياجاته الفردية، مما يؤدي إلى تطوير قدراتهم ومواهبهم بشكل
-                ملحوظ. بالإضافة إلى ذلك، تتبنى المدرسة أساليب تعليمية متقدمة
-                وحديثة مثل استخدام التكنولوجيا في التعليم، والتفاعل الفعّال في
-                الصفوف، وتشجيع المشروعات البحثية والإبداعية للطلاب. هذه الأساليب
-                تساعد في تنمية مهارات التفكير النقدي والابتكار لدى الطلاب، مما
-                يمنحهم القدرة على التفكير المستقل وحل المشكلات بفعالية. لذا، يجب
-                على ولي الأمر اختيار مدرسة البراعم الابتدائية المشتركة إذا كان
-                يبحث عن بيئة تعليمية محفزة ومتميزة تهدف إلى تطوير شامل للطلاب، من
-                خلال مدرسين متخصصين وأساليب تعليمية متطورة تلبي احتياجات العصر
-                وتساهم في بناء مستقبلهم.
+                تُعد مدرسة البراعم الابتدائية المشتركة واحدة من الروافد
+                التعليمية المتميزة في عالم التعليم، وذلك بفضل توفيرها لبيئة
+                تعليمية محفزة ومتطورة تتسم بالتشكيل الرائع. يتميز المدرسون في
+                هذه المدرسة بمهارات تدريس عالية وتوجيه فردي لكل طالب يستند إلى
+                معرفته واحتياجاته الفردية، مما يؤدي إلى تطوير قدراتهم ومواهبهم
+                بشكل ملحوظ. بالإضافة إلى ذلك، تتبنى المدرسة أساليب تعليمية
+                متقدمة وحديثة مثل استخدام التكنولوجيا في التعليم، والتفاعل
+                الفعّال في الصفوف، وتشجيع المشروعات البحثية والإبداعية للطلاب.
+                هذه الأساليب تساعد في تنمية مهارات التفكير النقدي والابتكار لدى
+                الطلاب، مما يمنحهم القدرة على التفكير المستقل وحل المشكلات
+                بفعالية. لذا، يجب على ولي الأمر اختيار مدرسة البراعم الابتدائية
+                المشتركة إذا كان يبحث عن بيئة تعليمية محفزة ومتميزة تهدف إلى
+                تطوير شامل للطلاب، من خلال مدرسين متخصصين وأساليب تعليمية متطورة
+                تلبي احتياجات العصر وتساهم في بناء مستقبلهم.
               </p>
             </div>
           </div>
         </div>
       </div>
 
-      <Fotr/>
+      <Fotr />
     </>
   );
 }
